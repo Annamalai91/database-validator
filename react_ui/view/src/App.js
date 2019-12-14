@@ -14,7 +14,7 @@ class App extends Component {
       <AuthProvider>
       <Router basename="/react-auth-ui/">
         <div>
-              <Route path="/" exact component={Cockpit}></Route>
+              <Route path="/login" exact component={Cockpit}></Route>
               <PrivateRoute path="/main" component={Main}></PrivateRoute>
         </div>
       </Router>

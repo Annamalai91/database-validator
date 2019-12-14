@@ -45,10 +45,10 @@ state = { isSignedIn: false }
                     <div className="Cockpit__Aside"></div>
                     <div className="Cockpit__Form">
                         <div className="PageSwitcher">
-                            <NavLink to="/" activeClassName="PageSwitcher__Item--Active" className="PageSwitcher__Item">Sign In</NavLink>
+                            <NavLink to="/login" activeClassName="PageSwitcher__Item--Active" className="PageSwitcher__Item">Sign In</NavLink>
                         </div>
                         <div className="FormTitle">
-                                <NavLink to="/" activeClassName="FormTitle__Link--Active" className="FormTitle__Link">Sign In</NavLink> 
+                                <NavLink to="/login" activeClassName="FormTitle__Link--Active" className="FormTitle__Link">Sign In</NavLink> 
                         </div>
                         <StyledFirebaseAuth
                         uiConfig={this.uiConfig}
