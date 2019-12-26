@@ -13,25 +13,37 @@ const useStyles = makeStyles({
   });
 
 
-export default function RadioButton() {
-  const [value, setValue] = React.useState('female');
+export default function RadioButton(props) {
+ // const [value, setValue] = React.useState('female');
   const classes = useStyles();
 
 
-  const handleChange = event => {
-    setValue(event.target.value);
-  };
+  // const handleChange = event => {
+  //   setValue(event.target.value);
+  // };
 
  
 
   return (
     <FormControl component="fieldset">
-      <p>Select the Database you want to Query</p>
-      <RadioGroup aria-label="position" name="position" value={value} onChange={handleChange} row>
-        <FormControlLabel className={classes.root}
-          value="top"
+         <p>{props.title}</p>
+         {/* <RadioGroup aria-label="position" name="position" value={value} onChange={handleChange} row> */}
+         <RadioGroup aria-label="position" name="position" onChange={props.changed} row>
+         {props.dataArray.map((data, index) => {
+              console.log(data); return (
+              <FormControlLabel className={classes.root}
+          key={data}
+          value={data}
           control={<Radio color="primary" />}
-          label="Top"
+          label={data}
+          labelPlacement="top"
+              /> );
+    }) }
+
+        {/* <FormControlLabel className={classes.root}
+          value={props.dataArray[0]}
+          control={<Radio color="primary" />}
+          label={props.dataArray[0]}
           labelPlacement="top"
         />
         <FormControlLabel className={classes.root}
@@ -51,7 +63,7 @@ export default function RadioButton() {
           control={<Radio color="primary" />}
           label="End"
           labelPlacement="top"
-        />
+        /> */}
       </RadioGroup>
     </FormControl>
   );
