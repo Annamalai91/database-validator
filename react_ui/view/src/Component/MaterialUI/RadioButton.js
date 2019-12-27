@@ -34,7 +34,7 @@ export default function RadioButton(props) {
               <FormControlLabel className={classes.root}
           key={data}
           value={data}
-          control={<Radio color="primary" />}
+          control={<Radio color="secondary" />}
           label={data}
           labelPlacement="top"
               /> );

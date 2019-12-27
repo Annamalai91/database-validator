@@ -39,18 +39,18 @@ const MenuProps = {
   },
 };
 
-const names = [
-  'Oliver Hansen',
-  'Van Henry',
-  'April Tucker',
-  'Ralph Hubbard',
-  'Omar Alexander',
-  'Carlos Abbott',
-  'Miriam Wagner',
-  'Bradley Wilkerson',
-  'Virginia Andrews',
-  'Kelly Snyder',
-];
+// const names = [
+//   'Oliver Hansen',
+//   'Van Henry',
+//   'April Tucker',
+//   'Ralph Hubbard',
+//   'Omar Alexander',
+//   'Carlos Abbott',
+//   'Miriam Wagner',
+//   'Bradley Wilkerson',
+//   'Virginia Andrews',
+//   'Kelly Snyder',
+// ];
 
 function getStyles(name, personName, theme) {
   return {
@@ -61,7 +61,7 @@ function getStyles(name, personName, theme) {
   };
 }
 
-export default function MultiSelect() {
+export default function MultiSelect(props) {
   const classes = useStyles();
   const theme = useTheme();
   const [personName, setPersonName] = React.useState([]);
@@ -79,8 +79,8 @@ export default function MultiSelect() {
           labelId="demo-mutiple-chip-label"
           id="demo-mutiple-chip"
           multiple
-          value={personName}
-          onChange={handleChange}
+          value={props.coloumnValue}
+          onChange={props.changed}
           input={<Input id="select-multiple-chip" />}
           renderValue={selected => (
             <div className={classes.chips}>
@@ -91,7 +91,7 @@ export default function MultiSelect() {
           )}
           MenuProps={MenuProps}
         >
-          {names.map(name => (
+          {props.dataObj.map(name => (
             <MenuItem key={name} value={name} style={getStyles(name, personName, theme)}>
               {name}
             </MenuItem>

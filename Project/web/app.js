@@ -1,6 +1,7 @@
 var express = require("express");
 
 var app = express();
+const cors = require('cors');
 const bodyparser = require('body-parser');
 
 app.use(bodyparser.json());
@@ -9,6 +10,8 @@ var handlebars = require("express-handlebars");
 app.engine("handlebars", handlebars({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 
+// Setting up the cors config
+app.use(cors());
 
 /* set up sql connection */
 var mysql = require("mysql");
@@ -36,7 +39,50 @@ connection.connect(function(err){
 
 //Get all employees
 app.get('/employees', (req, res) => {
+    console.log("Hiii")
     connection.query('SELECT * FROM Employee', (err, rows, fields) => {
+        if (!err)
+            res.send(rows);
+        else
+            console.log(err);
+    })
+});
+
+//Get all databases
+app.get('/getalldatabases', (req, res) => {
+    console.log("Came isndie")
+    connection.query('SHOW DATABASES', (err, rows, fields) => {
+        if (!err)
+            res.send(rows);
+        else
+            console.log(err);
+    })
+});
+
+//Get Table of the particular DB 
+//Get DB from the request
+//USE that DB and then get the tables 
+app.get('/getalltables/:DBname', (req, res) => {
+
+    var sqlQuery =`use ${req.params.DBname}; Show tables;`;
+    console.log("Came isndie table")
+    connection.query(sqlQuery, (err, rows, fields) => {
+        if (!err)
+            res.send(rows);
+        else
+            console.log(err);
+    })
+});
+
+
+//Get Column name of the particular Table 
+//Get table from the request
+//USE that DB and then get the tables 
+app.get('/getallColumns/:TableName', (req, res) => {
+
+    var sqlQuery =`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${req.params.TableName}' ORDER BY ORDINAL_POSITION`;
+    console.log("Came isndie columns")
+    connection.query(sqlQuery, (err, rows, fields) => {
         if (!err)
             res.send(rows);
         else
@@ -101,5 +147,5 @@ app.put('/employees', (req, res) => {
 var port = 3257;
 
 app.listen(port, function(){
-	console.log("app listening on port: " + port);
+	console.log("CORS-enabled web server is now running on port : " + port);
 });

@@ -6,7 +6,6 @@ services:
     environment:
       MYSQL_DATABASE: tcs
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_USER: mysql
       MYSQL_PASSWORD: password
       DATABASE_HOST: db
   web:
@@ -15,7 +14,7 @@ services:
       DATABASE_HOST: db
       MYSQL_PORT: 3306
       MYSQL_DATABASE: tcs
-      MYSQL_USER: mysql
+      MYSQL_USER: root
       MYSQL_PASSWORD: password
     ports:
       - "3257:3257"
