@@ -91,6 +91,34 @@ app.get('/getallColumns/:TableName', (req, res) => {
 });
 
 
+//Get Select Query from the request and send back the response
+//Everything needs to be Dynamic
+app.get('/SelectQuery', (req, res) => {
+    console.log("Came inside the Select Query")
+    const Databse = req.query.Databse
+    const Table = req.query.Table
+    const Columns = req.query.Columns
+    const filter = req.query.filter
+ console.log(Databse);
+ console.log(Table);
+ console.log(Columns);
+ console.log(filter);
+
+ var Query =  `use ${Databse}; Select ${Columns} from ${Table};`;
+
+
+    // var sqlQuery =`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${req.params.TableName}' ORDER BY ORDINAL_POSITION`;
+    connection.query(Query, (err, rows, fields) => {
+        if (!err)
+            res.send(rows);
+        else
+            console.log(err);
+    })
+});
+
+
+
+
 //Get an employees
 app.get('/employees/:id', (req, res) => {
     connection.query('SELECT * FROM Employee WHERE id = ?', [req.params.id], (err, rows, fields) => {

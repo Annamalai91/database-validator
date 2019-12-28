@@ -72,9 +72,9 @@ export default function MultiSelect(props) {
 
 
   return (
-    <div>
+    <div style={{marginBottom: 15,marginRight:10}}>
       <FormControl className={classes.formControl}>
-        <InputLabel className={classes.inputLabel} id="demo-mutiple-chip-label">Please select the Columns You need </InputLabel>
+  <InputLabel className={classes.inputLabel} id="demo-mutiple-chip-label">{props.title}</InputLabel>
         <Select
           labelId="demo-mutiple-chip-label"
           id="demo-mutiple-chip"
