@@ -4,7 +4,9 @@ import RadioButton from '../Component/MaterialUI/RadioButton'
 import Modal from '../Component/MaterialUI/Modal'
 import axios from '../Component/Axios/axios'
 import Table from '../Component/MaterialUI/Table'
-import { MDBBtn } from "mdbreact";
+import { MDBBtn} from "mdbreact";
+import DropDown from '../Component/MaterialUI/Dropdown'
+
 
 class DatabaseHandler extends Component {
 
@@ -25,7 +27,10 @@ class DatabaseHandler extends Component {
        filterSelected : null,
        operationSelected : null,
        showTable : false,
-       Tabledata : null
+       Tabledata : null,
+       operation : {},
+       filtervalue: [],
+       showbutton : false
       };
 // Get the columns selected
 
@@ -86,7 +91,7 @@ handleRadioChange = (event,whichRadio) => {
                    return Object.values(tableObj).toString()
                 })
                 console.log(retrievedTable);
-            this.setState({isDatabaseSelected:true ,retrievedTable: retrievedTable,selectedDatabase:selectedValue});
+            this.setState({isDatabaseSelected:true ,retrievedTable: retrievedTable,selectedDatabase:selectedValue,selectedTable:null,isTableSelected:false});
                
             } )
             .catch(error => {
@@ -125,10 +130,58 @@ handleRadioChange = (event,whichRadio) => {
     }
 
     if(whichRadio === "filter") 
-    this.setState({filterSelected:selectedValue});
+    {
+        if(selectedValue === "No")
+        {
+            this.setState({columnsfilterSelected:[],columnsSelected:[]})
+        } 
+        this.setState({filterSelected:selectedValue,showTable:false,columnsfilterSelected:[],columnsSelected:[]});
+    }
+
     
  
   };
+
+
+  //This method executes when the filter values are entered in dropdown component
+
+   handleDropDownChange = (event,filter) => {
+     let operationObj = this.state.operation;
+     console.log(filter)
+
+        operationObj[filter] = event.target.value
+        console.log(operationObj)
+        this.setState({operation:operationObj});
+ 
+    
+   
+  };
+
+  //This method is used to set the state of filtered value
+
+  
+  handleFilterValueChange = (event,filter) => {
+       let filterValueArr = this.state.filtervalue; 
+       let tempObj = {}
+       let tempvalue = this.state.operation[filter]
+       if(tempvalue == undefined )
+       {
+           tempvalue = "is"
+       }
+       console.log(event.target.value)
+       console.log(filterValueArr.length)
+       
+       if(event.target.value !="Please enter the Search Sring ")
+       {
+        tempObj[filter] = [tempvalue,event.target.value]
+        console.log(tempObj)
+        filterValueArr.push({tempObj})
+        console.log(filterValueArr)
+        this.setState({filtervalue:filterValueArr});
+       }
+    
+  };
+
 
   // After Clicking on this button, we need to call databse to get the results, as we got whatever we need
 
@@ -144,10 +197,11 @@ databaseCallHandler = () => {
  let rowarr = null;
  let TableSkeleton = null;
 
+
  if(Columns!=null)
  {
     columnarr = Columns.map(column => ({
-        label: column,
+        label: column.charAt(0).toUpperCase() + column.slice(1),
         field: column,
         sort: 'asc',
         width: 150
@@ -202,10 +256,12 @@ databaseCallHandler = () => {
         let tableview = null;
         let columnview = null;
         let filterview=null;
+        let buttonview = null;
         let filtermodalview = null;
         let tablebody=null;
         const Operations = ["Select","Update","Delete","Insert"]
         const filterOperation = ["Yes","No"]
+        let filterinputview = null;
 //If database is selected, then we can show the tables
     if (this.state.isDatabaseSelected) {
       tableview = (
@@ -238,7 +294,7 @@ databaseCallHandler = () => {
 //If table is selected, then we can show the columns
 //Also we will ask, if member want to add any condition to filter the results 
     if (this.state.isTableSelected && this.state.filterSelected) {
-        if(this,this.state.filterSelected=="Yes")
+        if(this.state.filterSelected=="Yes")
         columnview = (
             <div>
             <MultiSelect 
@@ -296,11 +352,37 @@ if (this.state.filterSelected==="No") {
   if(columnview!=null && this.state.showTable)
   {
       tablebody = (
+          <div style={{clear:"both"}}>
           <div style={{marginTop: 15}} >
+              <h3>Results for the Query</h3>
          <Table data={this.state.Tabledata}></Table> 
+         </div>
          </div>
       );
   }
+
+    //If filter is selected then we can get the inputs of the filter form the User
+    if(this.state.columnsfilterSelected.length>0)
+    {
+           console.log(this.state.columnsfilterSelected);
+        filterinputview = (
+            <div style={{clear: "both"}} >
+                <div  style={{float: "left"}}>
+                  {         
+
+                      this.state.columnsfilterSelected.map(valuerecord => {
+                          console.log(valuerecord)
+                        return <div >
+                            <DropDown datavalue={valuerecord} filtervalue={(event) => this.handleFilterValueChange(event,valuerecord)} changed={(event) => this.handleDropDownChange(event,valuerecord)} selectedvalue={this.state.operation[valuerecord]} /> 
+                        </div>
+                      }
+                        
+                      )
+                  }
+               </div>
+           </div>
+        );
+    }
 
   const defaultView = (
       <div>
@@ -319,6 +401,27 @@ if (this.state.filterSelected==="No") {
     </div>
   )
 
+if(this.state.filterSelected ==="No" && this.state.columnsSelected.length>0)
+{
+buttonview = (
+    <div  style={{clear:"both"}}>
+                      <MDBBtn onClick={this.databaseCallHandler}>Submit</MDBBtn>
+                      </div>
+         
+);
+}
+else {
+    if(this.state.filterSelected ==="Yes" && this.state.columnsfilterSelected.length>0 && (this.state.filtervalue.length == this.state.columnsfilterSelected.length )) {
+        buttonview = (
+            <div  style={{clear:"both"}}>
+                              <MDBBtn onClick={this.databaseCallHandler}>Submit</MDBBtn>
+                              </div>
+                 
+        );
+    }
+    
+}
+
 
         return (
             <div>
@@ -328,11 +431,11 @@ if (this.state.filterSelected==="No") {
                 {columnview}
                
                 {filtermodalview}
-          
-                {this.state.columnsSelected.length < 1 ? null : 
-                      <MDBBtn onClick={this.databaseCallHandler}>Submit</MDBBtn>
-                }
-                      {tablebody}
+                {filterinputview}
+                {console.log(this.state.columnsfilterSelected.length)}
+                {console.log(this.state.filtervalue.length)}
+                {buttonview}
+                {tablebody}
             </div>
         );
     }
