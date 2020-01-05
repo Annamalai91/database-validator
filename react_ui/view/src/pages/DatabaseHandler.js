@@ -162,7 +162,8 @@ handleRadioChange = (event,whichRadio) => {
   
   handleFilterValueChange = (event,filter) => {
        let filterValueArr = this.state.filtervalue; 
-       let tempObj = {}
+       let tempObj = {};
+       let iselementpresent= false;
        let tempvalue = this.state.operation[filter]
        if(tempvalue == undefined )
        {
@@ -175,12 +176,126 @@ handleRadioChange = (event,whichRadio) => {
        {
         tempObj[filter] = [tempvalue,event.target.value]
         console.log(tempObj)
-        filterValueArr.push({tempObj})
-        console.log(filterValueArr)
+       let tempObjKeys =  Object.keys(tempObj).toString()
+       console.log(tempObjKeys)
+       if(filterValueArr.length == 0)
+       {
+        filterValueArr.push(tempObj)
+       }
+       else
+       {
+        filterValueArr.forEach((element,index) => {
+            console.log("Inside the for each")
+            console.log(element)
+            
+            console.log("Valie of index is ")
+            console.log(index)
+            const tempkey =  Object.keys(element).toString()
+                console.log(tempkey)
+            if(tempObjKeys==tempkey)
+            {
+                console.log("Came inside the if both are ewuasd")
+                filterValueArr[index] = tempObj;
+                iselementpresent = true;
+            }
+            
+        }
+        );
+      if(filterValueArr.length != 0 && !iselementpresent)
+      {
+        filterValueArr.push(tempObj)
+      }
+       }
+      
+        // filterValueArr.push(tempObj)
+      console.log(filterValueArr)
         this.setState({filtervalue:filterValueArr});
        }
     
   };
+
+//Call to database when select is selected and No filters are selected 
+
+databaseCallSelectNoFilterHandler = (Databse,Table,Columns,filter,columnarr) => {
+    let rowarr = null;
+    let TableSkeleton = null;
+    axios.get("/SelectQuery",{
+        params: {
+            Databse: Databse,
+            Table : Table,
+            Columns : Columns,
+            filter : filter
+        }
+      })
+    .then( response => {
+        console.log(response.data[1])
+        rowarr = response.data[1]
+        TableSkeleton = {
+            columns : columnarr,
+            rows : rowarr
+        }
+        console.log(TableSkeleton)
+        this.setState({Tabledata:TableSkeleton});
+        this.setState({showTable:true});
+
+    } )
+    .catch(error => {
+        console.log(error);
+
+    });
+    
+}
+
+
+
+//Call to database when select is selected and Yes filters are selected 
+
+databaseCallSelectYesFilterHandler = (Databse,Table,Columns,filter,columnarr) => {
+    let filtervalue = this.state.filtervalue
+    console.log("Came inside the Yes filter handler")
+    console.log("*****Database******")
+    console.log(Databse);
+    console.log("*****Table******")
+    console.log(Table);
+    console.log("*****Columns******")
+    console.log(Columns);
+    console.log("*****filter******")
+    console.log(filter);
+    console.log("*****filtervalue******")
+    console.log(filtervalue)
+    
+
+
+
+    let rowarr = null;
+    let TableSkeleton = null;
+    axios.get("/SelectQueryWithFilter",{
+        params: {
+            Databse: Databse,
+            Table : Table,
+            Columns : Columns,
+            filter : filter,
+            filtervalue : filtervalue
+        }
+      })
+    .then( response => {
+        console.log(response.data[1])
+        rowarr = response.data[1]
+        TableSkeleton = {
+            columns : columnarr,
+            rows : rowarr
+        }
+        console.log(TableSkeleton)
+        this.setState({Tabledata:TableSkeleton});
+        this.setState({showTable:true});
+
+    } )
+    .catch(error => {
+        console.log(error);
+
+    });
+    
+}
 
 
   // After Clicking on this button, we need to call databse to get the results, as we got whatever we need
@@ -194,8 +309,7 @@ databaseCallHandler = () => {
  const filter = this.state.filterSelected;
  const operation = this.state.operationSelected;
  let columnarr=null;
- let rowarr = null;
- let TableSkeleton = null;
+ 
 
 
  if(Columns!=null)
@@ -221,33 +335,16 @@ databaseCallHandler = () => {
  console.log(filter);
 
 
-   if(operation==="Select")
+   if(operation==="Select" && filter==="No")
         {
-            axios.get("/SelectQuery",{
-                params: {
-                    Databse: Databse,
-                    Table : Table,
-                    Columns : Columns,
-                    filter : filter
-                }
-              })
-            .then( response => {
-                console.log(response.data[1])
-                rowarr = response.data[1]
-                TableSkeleton = {
-                    columns : columnarr,
-                    rows : rowarr
-                }
-                console.log(TableSkeleton)
-                this.setState({Tabledata:TableSkeleton});
-                this.setState({showTable:true});
-
-            } )
-            .catch(error => {
-                console.log(error);
-
-            });
+            this.databaseCallSelectNoFilterHandler(Databse,Table,Columns,filter,columnarr);
         }
+
+    
+   if(operation==="Select" && filter==="Yes")
+   {
+       this.databaseCallSelectYesFilterHandler(Databse,Table,Columns,filter,columnarr);
+   }
             
  }
 

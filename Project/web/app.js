@@ -170,6 +170,104 @@ app.put('/employees', (req, res) => {
 });
 
 
+
+
+
+//Get Select Query from the request and send back the response
+//Everything needs to be Dynamic
+app.get('/SelectQueryWithFilter', (req, res) => {
+    console.log("Came inside the Select Query with filter")
+    const Databse = req.query.Databse
+    const Table = req.query.Table
+    const Columns = req.query.Columns
+    const filter = req.query.filter
+    const filtervalue = req.query.filtervalue
+
+ console.log(Databse);
+ console.log(Table);
+ console.log(Columns);
+ console.log(filter);
+ console.log(filtervalue);
+
+ let filterQuery = 'where '
+
+ filtervalue.forEach(function(value,index){
+    console.log(value);
+    console.log(index)
+   
+    var obj = JSON.parse(value);
+    var keys = Object.keys(obj);
+    for (var i = 0; i < keys.length; i++) {
+        {   console.log(`The valuie if i us `+i)
+            console.log(keys[i])
+            console.log(obj[keys[i]][0]);
+            console.log(obj[keys[i]][1]);
+            console.log(i)
+            console.log(keys)
+            console.log(keys.length)
+
+          
+
+            let filtercolumn = keys[i];
+            let filteroperation = obj[keys[i]][0];
+            let filterString = obj[keys[i]][1];
+
+            filterQuery = `${filterQuery} ${filtercolumn}`
+            console.log("Before switch")
+            console.log(filterQuery)
+
+            switch(filteroperation) {
+                case 'is':
+                  console.log("IS operation detected");
+                  filterQuery = `${filterQuery} ='${filterString}'`
+                  console.log(filterQuery)
+                  break;
+                case 'in':
+                  console.log("IN operation detected")
+                  filterQuery = `${filterQuery} IN(${filterString})`
+                  console.log(filterQuery)
+                  break;
+                case 'like':
+                   console.log("Like operation detected")
+                   filterQuery = `${filterQuery} LIKE '${filterString}'`
+                   console.log(filterQuery)
+                   break;
+              }
+            
+
+        }
+  
+}
+
+if (filtervalue[index + 1]){
+    filterQuery = `${filterQuery} and `
+}
+  });
+
+console.log("ASdddddddddd")
+  console.log(filterQuery)
+ var Query =  `use ${Databse}; Select ${Columns} from ${Table} ${filterQuery};`;
+
+
+    // var sqlQuery =`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${req.params.TableName}' ORDER BY ORDINAL_POSITION`;
+    connection.query(Query, (err, rows, fields) => {
+        if (!err)
+            res.send(rows);
+        else
+            console.log(err);
+    })
+});
+
+
+
+
+
+
+
+
+
+
+
 /* Port and listening info below */
 /* might want to set up argv for easily changing the port */
 var port = 3257;
