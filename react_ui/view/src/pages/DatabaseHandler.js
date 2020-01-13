@@ -24,22 +24,80 @@ class DatabaseHandler extends Component {
        retrievedColumns : null,
        columnsSelected : [],
        columnsfilterSelected : [],
+       columnupdateSelected : [],
        filterSelected : null,
        operationSelected : null,
        showTable : false,
        Tabledata : null,
        operation : {},
        filtervalue: [],
-       showbutton : false
+       filterupdatevalue : [],
+       showbutton : false,
+       Showmessage:false,
+       affectedrow : null
+     
       };
+
+// This mehod is used to push things to array after some business operation
+
+pushArrayItems = (filterarr,event) => {
+    let temparr = [];
+        
+        console.log(filterarr)
+        let columnselectedarr = event.target.value;
+        console.log(columnselectedarr)
+       
+        columnselectedarr.forEach((column) => {
+                console.log(column)
+            filterarr.forEach((element,index) => {
+                console.log("Element is ")
+                console.log(element)
+                
+                console.log("Valie of index is ")
+                console.log(index)
+                const tempkey =  Object.keys(element).toString()
+                    console.log(tempkey)
+                if(tempkey===column)
+                {
+                    temparr.push(element)
+                }
+                
+            });
+
+        });
+
+        return temparr
+}
+
+
 // Get the columns selected
 
 handleColoumnChange = (event,whichDropDown) => {
     if(whichDropDown==="Report")
-    this.setState({columnsSelected: event.target.value});
+    {
+    
+        this.setState({columnsSelected: event.target.value});
+    }
+ else{
+   
     if(whichDropDown==="Filter")
-    this.setState({columnsfilterSelected: event.target.value});
+    {  
+    const temparr =  this.pushArrayItems(this.state.filtervalue,event)
+    this.setState({columnsfilterSelected: event.target.value, filtervalue:temparr});
+}
+else{
 
+    if(whichDropDown==="Update")
+    {
+        const temparr =  this.pushArrayItems(this.state.filterupdatevalue,event)
+        this.setState({columnupdateSelected : event.target.value, filterupdatevalue:temparr});
+    }
+
+}
+
+
+}
+   
   };
 
 
@@ -60,7 +118,7 @@ componentDidMount () {
                  return databaseObj.Database
              })
 
-             console.log( retrievedDatabase );
+             //console.log( retrievedDatabase );
              this.setState({retrievedDatabase: retrievedDatabase});
         } )
         .catch(error => {
@@ -78,19 +136,19 @@ componentDidMount () {
 
 handleRadioChange = (event,whichRadio) => {
     const selectedValue=event.target.value; 
-    console.log(selectedValue)
+   // console.log(selectedValue)
     let retrievedTable = null;
     let retrievedColumns = null;
     if(whichRadio === "Database") 
         {
             axios.get(`/getalltables/${selectedValue}`)
             .then( response => {
-                console.log(response.data[1])
+               // console.log(response.data[1])
 
                retrievedTable = response.data[1].map(tableObj => {
                    return Object.values(tableObj).toString()
                 })
-                console.log(retrievedTable);
+           //     console.log(retrievedTable);
             this.setState({isDatabaseSelected:true ,retrievedTable: retrievedTable,selectedDatabase:selectedValue,selectedTable:null,isTableSelected:false});
                
             } )
@@ -106,14 +164,19 @@ handleRadioChange = (event,whichRadio) => {
     {
         axios.get(`/getallColumns/${selectedValue}`)
         .then( response => {
-            console.log(response.data)
+          //  console.log(response.data)
 
            retrievedColumns = response.data.map(columnObj => {
                return Object.values(columnObj).toString()
             })
+          //  retrievedColumns = ["All",...retrievedColumns]
             console.log(retrievedColumns);
-        this.setState({ retrievedColumns : retrievedColumns, isTableSelected:true,selectedTable:selectedValue});
-        console.log(selectedValue)
+
+            
+                this.setState({retrievedColumns : retrievedColumns, isTableSelected:true,selectedTable:selectedValue})
+           
+        
+       // console.log(selectedValue)
            
         } )
         .catch(error => {
@@ -122,11 +185,29 @@ handleRadioChange = (event,whichRadio) => {
         });
     }
     
-    console.log("Outside operatat")
+   // console.log("Outside operatat")
     if(whichRadio === "Operation") 
     {
-        console.log("Cae inside oeprat")
-    this.setState({operationSelected:selectedValue});
+       // console.log("Cae inside oeprat")
+       
+    this.setState({operationSelected:selectedValue,
+        isDatabaseSelected : false,
+        isTableSelected : false,
+        selectedDatabase : null,
+        selectedTable : null,
+        retrievedTable : null,
+        retrievedColumns : null,
+        columnsSelected : [],
+        columnsfilterSelected : [],
+        columnupdateSelected : [],
+        showTable : false,
+        Tabledata : null,
+        operation : {},
+        filtervalue: [],
+        showbutton : false,filterSelected:null,
+        Showmessage : false,
+        affectedrow : null
+    });
     }
 
     if(whichRadio === "filter") 
@@ -147,69 +228,91 @@ handleRadioChange = (event,whichRadio) => {
 
    handleDropDownChange = (event,filter) => {
      let operationObj = this.state.operation;
-     console.log(filter)
+    // console.log(filter)
 
         operationObj[filter] = event.target.value
-        console.log(operationObj)
+       // console.log(operationObj)
         this.setState({operation:operationObj});
  
     
    
   };
+  
+
+  pushArrayItemsdropdown = (event,filter,filterarr,tempvalue) => {
+    let tempObj = {};
+    let iselementpresent= false;
+    tempObj[filter] = [tempvalue,event.target.value]
+    // console.log(tempObj)
+    let tempObjKeys =  Object.keys(tempObj).toString()
+  //  console.log(tempObjKeys)
+    if(filterarr.length == 0)
+    {
+     filterarr.push(tempObj)
+    }
+    else
+    {
+     filterarr.forEach((element,index) => {
+      //   console.log("Inside the for each")
+       //  console.log(element)
+         
+       //  console.log("Valie of index is ")
+       //  console.log(index)
+         const tempkey =  Object.keys(element).toString()
+          //   console.log(tempkey)
+         if(tempObjKeys==tempkey)
+         {
+           //  console.log("Came inside the if both are ewuasd")
+             filterarr[index] = tempObj;
+             iselementpresent = true;
+         }
+         
+     }
+     );
+   if(filterarr.length != 0 && !iselementpresent)
+   {
+     filterarr.push(tempObj)
+   }
+    }
+   
+    return filterarr
+  }
+
+
 
   //This method is used to set the state of filtered value
 
   
-  handleFilterValueChange = (event,filter) => {
-       let filterValueArr = this.state.filtervalue; 
-       let tempObj = {};
-       let iselementpresent= false;
+  handleFilterValueChange = (event,filter,operation) => {
+       let filterarr = []; 
+      
+      
        let tempvalue = this.state.operation[filter]
        if(tempvalue == undefined )
        {
            tempvalue = "is"
        }
-       console.log(event.target.value)
-       console.log(filterValueArr.length)
+     //  console.log(event.target.value)
+     //  console.log(filterarr.length)
        
-       if(event.target.value !="Please enter the Search Sring ")
+       if(event.target.value !="Please enter a value")
        {
-        tempObj[filter] = [tempvalue,event.target.value]
-        console.log(tempObj)
-       let tempObjKeys =  Object.keys(tempObj).toString()
-       console.log(tempObjKeys)
-       if(filterValueArr.length == 0)
-       {
-        filterValueArr.push(tempObj)
-       }
-       else
-       {
-        filterValueArr.forEach((element,index) => {
-            console.log("Inside the for each")
-            console.log(element)
-            
-            console.log("Valie of index is ")
-            console.log(index)
-            const tempkey =  Object.keys(element).toString()
-                console.log(tempkey)
-            if(tempObjKeys==tempkey)
+           console.log(this.state.operationSelected)
+       
+        if(operation==="filtervalue")
+        {
+            console.log("Came inside  filtervalue")
+            filterarr = this.pushArrayItemsdropdown(event,filter,this.state.filtervalue,tempvalue)
+            this.setState({filtervalue:filterarr});
+        }else{
+            if(operation==="filterupdatevalue")
             {
-                console.log("Came inside the if both are ewuasd")
-                filterValueArr[index] = tempObj;
-                iselementpresent = true;
+                console.log("Came inside  filterupdatevalue")
+                filterarr = this.pushArrayItemsdropdown(event,filter,this.state.filterupdatevalue,tempvalue)
+                this.setState({filterupdatevalue:filterarr});
             }
-            
         }
-        );
-      if(filterValueArr.length != 0 && !iselementpresent)
-      {
-        filterValueArr.push(tempObj)
-      }
-       }
-      
-        // filterValueArr.push(tempObj)
-      console.log(filterValueArr)
-        this.setState({filtervalue:filterValueArr});
+       
        }
     
   };
@@ -219,6 +322,7 @@ handleRadioChange = (event,whichRadio) => {
 databaseCallSelectNoFilterHandler = (Databse,Table,Columns,filter,columnarr) => {
     let rowarr = null;
     let TableSkeleton = null;
+
     axios.get("/SelectQuery",{
         params: {
             Databse: Databse,
@@ -228,13 +332,13 @@ databaseCallSelectNoFilterHandler = (Databse,Table,Columns,filter,columnarr) => 
         }
       })
     .then( response => {
-        console.log(response.data[1])
+       console.log(response.data[1])
         rowarr = response.data[1]
         TableSkeleton = {
             columns : columnarr,
             rows : rowarr
         }
-        console.log(TableSkeleton)
+    //    console.log(TableSkeleton)
         this.setState({Tabledata:TableSkeleton});
         this.setState({showTable:true});
 
@@ -251,24 +355,14 @@ databaseCallSelectNoFilterHandler = (Databse,Table,Columns,filter,columnarr) => 
 //Call to database when select is selected and Yes filters are selected 
 
 databaseCallSelectYesFilterHandler = (Databse,Table,Columns,filter,columnarr) => {
-    let filtervalue = this.state.filtervalue
-    console.log("Came inside the Yes filter handler")
-    console.log("*****Database******")
-    console.log(Databse);
-    console.log("*****Table******")
-    console.log(Table);
-    console.log("*****Columns******")
-    console.log(Columns);
-    console.log("*****filter******")
-    console.log(filter);
-    console.log("*****filtervalue******")
-    console.log(filtervalue)
+    let filtervalue = this.state.filtervalue;
     
 
 
 
     let rowarr = null;
     let TableSkeleton = null;
+   
     axios.get("/SelectQueryWithFilter",{
         params: {
             Databse: Databse,
@@ -279,6 +373,7 @@ databaseCallSelectYesFilterHandler = (Databse,Table,Columns,filter,columnarr) =>
         }
       })
     .then( response => {
+        console.log(response)
         console.log(response.data[1])
         rowarr = response.data[1]
         TableSkeleton = {
@@ -297,53 +392,159 @@ databaseCallSelectYesFilterHandler = (Databse,Table,Columns,filter,columnarr) =>
     
 }
 
+//Delete
+
+databaseCallDeleteHandler = (Databse,Table,Columns,filter,columnarr) => {
+
+
+    let filtervalue = this.state.filtervalue;
+
+    let filterupdatevalue = this.state.filterupdatevalue;
+console.log(Databse)
+console.log(Table)
+
+console.log(Columns)
+
+console.log(filter)
+
+console.log(columnarr)
+
+
+   
+    axios.delete("/DeleteQuery",{
+        params: {
+            Databse: Databse,
+            Table : Table,
+            Columns : Columns,
+            filter : filter,
+            filtervalue : filtervalue,
+            filterupdatevalue : filterupdatevalue
+        }
+      })
+    .then( response => {
+        console.log(response)
+        console.log(response.data)
+        // rowarr = response.data[1]
+        // TableSkeleton = {
+        //     columns : columnarr,
+        //     rows : rowarr
+        // }
+        // console.log(TableSkeleton)
+        // this.setState({Tabledata:TableSkeleton});
+        this.setState({Showmessage:true, affectedrow : response.data[0]});
+
+    } )
+    .catch(error => {
+        console.log(error);
+
+    });
+    
+}
+
+
+
+//Update 
+
+databaseCallUpdateHandler = (Databse,Table,Columns,filter,columnarr) => {
+    let filtervalue = this.state.filtervalue;
+
+    let filterupdatevalue = this.state.filterupdatevalue;
+console.log(Databse)
+console.log(Table)
+
+console.log(Columns)
+
+console.log(filter)
+
+console.log(columnarr)
+
+
+   
+    axios.put("/UpdateQuery",null,{
+        params: {
+            Databse: Databse,
+            Table : Table,
+            Columns : Columns,
+            filtervalue : filtervalue,
+            filterupdatevalue : filterupdatevalue
+        }
+      })
+    .then( response => {
+        console.log(response)
+        console.log(response.data)
+
+
+        // this.setState({Tabledata:TableSkeleton});
+        // this.setState({Showmessage:true});
+        this.setState({Showmessage:true, affectedrow : response.data[0]});
+
+    } )
+    .catch(error => {
+        console.log(error);
+
+    });
+    
+}
+
+
+
+
 
   // After Clicking on this button, we need to call databse to get the results, as we got whatever we need
 
 databaseCallHandler = () => {
 
-    console.log("CAme insde after button")
  const Databse = this.state.selectedDatabase;
  const Table = this.state.selectedTable;
- const Columns = this.state.columnsSelected;
+ let Columns = this.state.columnsSelected;
  const filter = this.state.filterSelected;
  const operation = this.state.operationSelected;
- let columnarr=null;
- 
+ let ColumnHeader=null;
+ let allSelected = false;
 
+ this.setState({Showmessage:false})
 
  if(Columns!=null)
  {
-    columnarr = Columns.map(column => ({
+    Columns.forEach((column) => {
+        console.log(column)
+        if(column.toString()==="All")
+        {
+            allSelected = true;
+        }
+    });
+    if(allSelected){
+        Columns = this.state.retrievedColumns
+        console.log(Columns)
+    }
+    ColumnHeader = Columns.map(column => ({
         label: column.charAt(0).toUpperCase() + column.slice(1),
         field: column,
         sort: 'asc',
         width: 150
     }))
-    console.log(columnarr)
-    console.log(typeof columnarr)
+
  }
-
-
-
-
-
- console.log(Databse);
- console.log(Table);
- console.log(Columns);
- console.log(operation);
- console.log(filter);
-
 
    if(operation==="Select" && filter==="No")
         {
-            this.databaseCallSelectNoFilterHandler(Databse,Table,Columns,filter,columnarr);
+            this.databaseCallSelectNoFilterHandler(Databse,Table,Columns,filter,ColumnHeader);
         }
 
     
    if(operation==="Select" && filter==="Yes")
    {
-       this.databaseCallSelectYesFilterHandler(Databse,Table,Columns,filter,columnarr);
+       this.databaseCallSelectYesFilterHandler(Databse,Table,Columns,filter,ColumnHeader);
+   }
+
+   if(operation==="Update")
+   {
+      this.databaseCallUpdateHandler(Databse,Table,Columns,filter,ColumnHeader);
+   }
+
+   if(operation==="Delete")
+   {
+      this.databaseCallDeleteHandler(Databse,Table,Columns,filter,ColumnHeader);
    }
             
  }
@@ -351,14 +552,24 @@ databaseCallHandler = () => {
     render() {
 //Setting the views that are needed
         let tableview = null;
+        let deleteView = null;
         let columnview = null;
+        let columnview2 = null;
         let filterview=null;
+        let affectedrowsview = null; 
         let buttonview = null;
         let filtermodalview = null;
         let tablebody=null;
-        const Operations = ["Select","Update","Delete","Insert"]
+        const Operations = ["Select","Update","Delete"]
         const filterOperation = ["Yes","No"]
         let filterinputview = null;
+        let filterupdateview = null;
+        let coloumnReport = null;
+        if(this.state.retrievedColumns != null)
+        {
+             coloumnReport = ["All",...this.state.retrievedColumns]
+        }
+        
 //If database is selected, then we can show the tables
     if (this.state.isDatabaseSelected) {
       tableview = (
@@ -375,27 +586,52 @@ databaseCallHandler = () => {
  //Ask member, if he want to add any filter to the Query after he selects the table
  if (this.state.isTableSelected) {
  filterview = (
-   
+     this.state.operationSelected==="Select" ?
+     
     <div>
     <RadioButton
     title="Do you want to add filter to the Query using Where conditon "
     changed={(event) => this.handleRadioChange(event,"filter")}
     dataArray ={filterOperation}
+  
       /> 
-</div>
+</div> : null
          
 );
  }
 
+//Delete View
+
+if(this.state.operationSelected==="Delete")
+{
+    
+    if (this.state.isTableSelected) {
+
+        deleteView = (
+            <div>
+            <MultiSelect 
+            dataObj={this.state.retrievedColumns}
+            changed={(event) => this.handleColoumnChange(event,"Filter")}
+            coloumnValue = {this.state.columnsfilterSelected}
+            title="Please select the columns you like to add condition"
+            ></MultiSelect>
+          </div>
+                 
+        );
+}
+}
 
 //If table is selected, then we can show the columns
 //Also we will ask, if member want to add any condition to filter the results 
+if(this.state.operationSelected==="Select")
+{
+    
     if (this.state.isTableSelected && this.state.filterSelected) {
         if(this.state.filterSelected=="Yes")
         columnview = (
             <div>
             <MultiSelect 
-            dataObj={this.state.retrievedColumns}
+            dataObj={coloumnReport}
             changed={(event) => this.handleColoumnChange(event,"Report")}
             coloumnValue = {this.state.columnsSelected}
             title="Please select the columns needed to show in the report"
@@ -410,9 +646,10 @@ databaseCallHandler = () => {
                  
         );
         else{
+           
             columnview = (
                 <MultiSelect 
-                dataObj={this.state.retrievedColumns}
+                dataObj={coloumnReport}
                 changed={(event) => this.handleColoumnChange(event,"Report")}
                 coloumnValue = {this.state.columnsSelected}
                 title="Please select the columns needed to show in the report"
@@ -424,6 +661,46 @@ databaseCallHandler = () => {
         }
 
       }
+}
+
+if(this.state.operationSelected==="Update" && (this.state.columnupdateSelected.length>0 && (this.state.filterupdatevalue.length == this.state.columnupdateSelected.length )))
+{
+    columnview2 = (
+        <div style={{clear:"both"}}>
+        <MultiSelect 
+        dataObj={this.state.retrievedColumns}
+        changed={(event) => this.handleColoumnChange(event,"Filter")}
+        coloumnValue = {this.state.columnsfilterSelected}
+        title="Please select the columns you like to add condition"
+        ></MultiSelect>
+        </div>
+    );
+}
+// To Do from tomoeroowcd 
+if(this.state.operationSelected==="Update")
+{
+    
+    if (this.state.isTableSelected) {
+        columnview = (
+           
+            <div style={{clear:"both"}}>
+            <MultiSelect 
+            dataObj={this.state.retrievedColumns}
+            changed={(event) => this.handleColoumnChange(event,"Update")}
+            coloumnValue = {this.state.columnupdateSelected}
+            title="Please select the columns you like to Update"
+            ></MultiSelect>           
+
+           
+           
+          </div>
+                 
+        );
+      
+
+      }
+}
+   
 
 //If Columns are selected, then we need to ask, if member is going to add any Where condition in the query
 
@@ -432,7 +709,7 @@ databaseCallHandler = () => {
 //Only top 10 rows will be fetched 
   
 if (this.state.filterSelected==="No") {
-    console.log("Came inbside filter selected")
+    // console.log("Came inbside filter selected")
     filtermodalview = (
    
         <div>
@@ -444,6 +721,26 @@ if (this.state.filterSelected==="No") {
              
     );
   }
+
+
+  // Affected Rows View
+
+  if (this.state.Showmessage) {
+    console.log("Came inbside Show sMessage")
+    affectedrowsview = (
+   
+        <div>
+        <Modal
+        data={"Number of rows affected by "+this.state.operationSelected+" is "+this.state.affectedrow}
+        modalvalue={true}
+          /> 
+ </div>
+             
+    );
+
+  }
+ 
+
 
   //If column view is null then we can create the table
   if(columnview!=null && this.state.showTable)
@@ -461,16 +758,17 @@ if (this.state.filterSelected==="No") {
     //If filter is selected then we can get the inputs of the filter form the User
     if(this.state.columnsfilterSelected.length>0)
     {
-           console.log(this.state.columnsfilterSelected);
+      //     console.log(this.state.columnsfilterSelected);
         filterinputview = (
             <div style={{clear: "both"}} >
                 <div  style={{float: "left"}}>
                   {         
 
-                      this.state.columnsfilterSelected.map(valuerecord => {
-                          console.log(valuerecord)
+                      this.state.columnsfilterSelected.map((valuerecord,index) => {
+                          console.log("Column Filter selected is ")
+                        console.log(valuerecord)
                         return <div >
-                            <DropDown datavalue={valuerecord} filtervalue={(event) => this.handleFilterValueChange(event,valuerecord)} changed={(event) => this.handleDropDownChange(event,valuerecord)} selectedvalue={this.state.operation[valuerecord]} /> 
+                            <DropDown menuitem={["is","in","like"]} datavalue={valuerecord} filtervalue={(event) => this.handleFilterValueChange(event,valuerecord,"filtervalue")} changed={(event) => this.handleDropDownChange(event,valuerecord)} datavalue2={this.state.filtervalue[index]} selectedvalue={this.state.operation[valuerecord]} /> 
                         </div>
                       }
                         
@@ -480,6 +778,31 @@ if (this.state.filterSelected==="No") {
            </div>
         );
     }
+
+
+      //If columns to update is selected then we can get the inputs of the filter form the User
+      if(this.state.columnupdateSelected.length>0)
+      {
+        //     console.log(this.state.columnupdateSelected);
+          filterupdateview = (
+              <div style={{clear: "both"}} >
+                  <div  style={{float: "left"}}>
+                    {         
+  
+                            this.state.columnupdateSelected.map((valuerecord,index) => {
+                                console.log("Column Filter Update selected is ")
+                            console.log(valuerecord)
+                            return <div >
+                                <DropDown menuitem={["is"]} datavalue={valuerecord} filtervalue={(event) => this.handleFilterValueChange(event,valuerecord,"filterupdatevalue")}  datavalue2={this.state.filterupdatevalue[index]}  /> 
+                            </div>
+                        }
+                          
+                        )
+                    }
+                 </div>
+             </div>
+          );
+      }
 
   const defaultView = (
       <div>
@@ -497,6 +820,7 @@ if (this.state.filterSelected==="No") {
     </div>
     </div>
   )
+  
 
 if(this.state.filterSelected ==="No" && this.state.columnsSelected.length>0)
 {
@@ -508,7 +832,7 @@ buttonview = (
 );
 }
 else {
-    if(this.state.filterSelected ==="Yes" && this.state.columnsfilterSelected.length>0 && (this.state.filtervalue.length == this.state.columnsfilterSelected.length )) {
+    if(this.state.columnsfilterSelected.length>0 && (this.state.filtervalue.length == this.state.columnsfilterSelected.length )) {
         buttonview = (
             <div  style={{clear:"both"}}>
                               <MDBBtn onClick={this.databaseCallHandler}>Submit</MDBBtn>
@@ -526,12 +850,17 @@ else {
                 {tableview}
                 {filterview}
                 {columnview}
-               
+                {deleteView}
+                {filterupdateview}
+                {columnview2}
                 {filtermodalview}
                 {filterinputview}
-                {console.log(this.state.columnsfilterSelected.length)}
-                {console.log(this.state.filtervalue.length)}
+              
+               
+                {/* {console.log(this.state.columnsfilterSelected.length)}
+                {console.log(this.state.filtervalue.length)} */}
                 {buttonview}
+                {affectedrowsview}
                 {tablebody}
             </div>
         );

@@ -37,16 +37,6 @@ connection.connect(function(err){
 
 
 
-//Get all employees
-app.get('/employees', (req, res) => {
-    console.log("Hiii")
-    connection.query('SELECT * FROM Employee', (err, rows, fields) => {
-        if (!err)
-            res.send(rows);
-        else
-            console.log(err);
-    })
-});
 
 //Get all databases
 app.get('/getalldatabases', (req, res) => {
@@ -119,55 +109,6 @@ app.get('/SelectQuery', (req, res) => {
 
 
 
-//Get an employees
-app.get('/employees/:id', (req, res) => {
-    connection.query('SELECT * FROM Employee WHERE id = ?', [req.params.id], (err, rows, fields) => {
-        if (!err)
-            res.send(rows);
-        else
-            console.log(err);
-    })
-});
-
-//Delete an employees
-app.delete('/employees/:id', (req, res) => {
-    connection.query('DELETE FROM Employee WHERE id = ?', [req.params.id], (err, rows, fields) => {
-        if (!err)
-            res.send('Deleted successfully.');
-        else
-            console.log(err);
-    })
-});
-
-//Insert an employees
-app.post('/employees', (req, res) => {
-	let emp = req.body;
-	emp.id = 0;
-    var sql = "SET @id = ?;SET @firstname = ?;SET @lastname = ?;SET @email = ?; \
-    CALL EmployeeAddorEdit1(@id,@firstname,@lastname,@email);";
-    connection.query(sql, [emp.id, emp.firstname, emp.lastname, emp.email], (err, rows, fields) => {
-        if (!err)
-            rows.forEach(element => {
-                if(element.constructor == Array)
-                res.send('Inserted employee id : '+element[0].id);
-            });
-        else
-            console.log(err);
-    })
-});
-
-//Update an employees
-app.put('/employees', (req, res) => {
-    let emp = req.body;
-    var sql = "SET @id = ?;SET @firstname = ?;SET @lastname = ?;SET @email = ?; \
-    CALL EmployeeAddorEdit1(@id,@firstname,@lastname,@email);";
-    connection.query(sql, [emp.id, emp.firstname, emp.lastname, emp.email], (err, rows, fields) => {
-        if (!err)
-            res.send('Updated successfully');
-        else
-            console.log(err);
-    })
-});
 
 
 
@@ -179,9 +120,16 @@ app.get('/SelectQueryWithFilter', (req, res) => {
     console.log("Came inside the Select Query with filter")
     const Databse = req.query.Databse
     const Table = req.query.Table
-    const Columns = req.query.Columns
+    let Columns = req.query.Columns
     const filter = req.query.filter
     const filtervalue = req.query.filtervalue
+    
+    req.query.Columns.forEach(function(value){
+        if(value==="All")
+        {
+            Columns = "*";
+        }
+    })
 
  console.log(Databse);
  console.log(Table);
@@ -247,7 +195,7 @@ if (filtervalue[index + 1]){
 console.log("ASdddddddddd")
   console.log(filterQuery)
  var Query =  `use ${Databse}; Select ${Columns} from ${Table} ${filterQuery};`;
-
+ console.log(Query);
 
     // var sqlQuery =`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${req.params.TableName}' ORDER BY ORDINAL_POSITION`;
     connection.query(Query, (err, rows, fields) => {
@@ -265,6 +213,239 @@ console.log("ASdddddddddd")
 
 
 
+
+//Get Update Query from the request and send back the response
+//Everything needs to be Dynamic
+app.put('/UpdateQuery', (req, res) => {
+    console.log("Came inside the Update Queery")
+    const Databse = req.query.Databse
+    const Table = req.query.Table
+    const filtervalue = req.query.filtervalue
+    const filterupdatevalue = req.query.filterupdatevalue
+
+    console.log(Databse);
+    console.log(Table);
+
+  
+    console.log(filtervalue);
+    console.log("*****************************");
+    console.log(filterupdatevalue);
+    console.log("*****************************");
+    
+
+    let filterQuery1 = 'SET '
+    let filterQuery2 = 'where'
+
+    filterupdatevalue.forEach(function(value,index){
+       console.log(value);
+       console.log(index)
+      
+       var obj = JSON.parse(value);
+       var keys = Object.keys(obj);
+       for (var i = 0; i < keys.length; i++) {
+           {   console.log(`The valuie if i us `+i)
+               console.log(keys[i])
+               console.log(obj[keys[i]][0]);
+               console.log(obj[keys[i]][1]);
+               console.log(i)
+               console.log(keys)
+               console.log(keys.length)
+   
+             
+   
+               let filtercolumn = keys[i];
+               let filteroperation = obj[keys[i]][0];
+               let filterString = obj[keys[i]][1];
+   
+               filterQuery1 = `${filterQuery1} ${filtercolumn}`
+               filterQuery2 = `${filterQuery2} ${filtercolumn}`
+               console.log("Before switch")
+               console.log(filterQuery1)
+   
+               switch(filteroperation) {
+                   case 'is':
+                     console.log("IS operation detected");
+                     filterQuery1 = `${filterQuery1} ='${filterString}'`
+                     filterQuery2 = `${filterQuery2} ='${filterString}'`
+                     console.log(filterQuery1)
+                     break;
+                   
+                 }
+               
+   
+           }
+     
+   }
+   
+   if (filterupdatevalue[index + 1]){
+       filterQuery1 = `${filterQuery1},`
+       filterQuery2 = `${filterQuery2},`
+   }
+     });
+   
+     console.log("++++++++++++++++++++++++++++")
+     console.log(filterQuery1)
+     console.log("++++++++++++++++++++++++++++")
+
+ let filterQuery = 'where '
+
+ filtervalue.forEach(function(value,index){
+    console.log(value);
+    console.log(index)
+   
+    var obj = JSON.parse(value);
+    var keys = Object.keys(obj);
+    for (var i = 0; i < keys.length; i++) {
+        {   console.log(`The valuie if i us `+i)
+            console.log(keys[i])
+            console.log(obj[keys[i]][0]);
+            console.log(obj[keys[i]][1]);
+            console.log(i)
+            console.log(keys)
+            console.log(keys.length)
+
+          
+
+            let filtercolumn = keys[i];
+            let filteroperation = obj[keys[i]][0];
+            let filterString = obj[keys[i]][1];
+
+            filterQuery = `${filterQuery} ${filtercolumn}`
+            console.log("Before switch")
+            console.log(filterQuery)
+
+            switch(filteroperation) {
+                case 'is':
+                  console.log("IS operation detected");
+                  filterQuery = `${filterQuery} ='${filterString}'`
+                  console.log(filterQuery)
+                  break;
+                case 'in':
+                  console.log("IN operation detected")
+                  filterQuery = `${filterQuery} IN(${filterString})`
+                  console.log(filterQuery)
+                  break;
+                case 'like':
+                   console.log("Like operation detected")
+                   filterQuery = `${filterQuery} LIKE '${filterString}'`
+                   console.log(filterQuery)
+                   break;
+              }
+            
+
+        }
+  
+}
+
+if (filtervalue[index + 1]){
+    filterQuery = `${filterQuery} and `
+}
+  });
+
+  console.log(filterQuery)
+ var Query =  `use ${Databse}; Update ${Table} ${filterQuery1} ${filterQuery};`;
+ console.log(Query);
+ let responsearray = []; 
+    connection.query(Query, (err, rows, fields) => {
+        if (!err)
+        {
+            responsearray.push(rows[1].affectedRows)
+            res.send(responsearray);
+        }
+
+   
+        else
+            console.log(err);
+    })
+});
+
+
+
+//Get Delete Query from the request and send back the response
+//Everything needs to be Dynamic
+app.delete('/DeleteQuery', (req, res) => {
+    console.log("Came inside the Select Query with filter")
+    const Databse = req.query.Databse
+    const Table = req.query.Table
+    const filtervalue = req.query.filtervalue
+    
+
+ console.log(Databse);
+ console.log(Table);
+ console.log(filtervalue)
+
+ let filterQuery = 'where '
+
+ filtervalue.forEach(function(value,index){
+    console.log(value);
+    console.log(index)
+   
+    var obj = JSON.parse(value);
+    var keys = Object.keys(obj);
+    for (var i = 0; i < keys.length; i++) {
+        {   console.log(`The valuie if i us `+i)
+            console.log(keys[i])
+            console.log(obj[keys[i]][0]);
+            console.log(obj[keys[i]][1]);
+            console.log(i)
+            console.log(keys)
+            console.log(keys.length)
+
+          
+
+            let filtercolumn = keys[i];
+            let filteroperation = obj[keys[i]][0];
+            let filterString = obj[keys[i]][1];
+
+            filterQuery = `${filterQuery} ${filtercolumn}`
+            console.log("Before switch")
+            console.log(filterQuery)
+
+            switch(filteroperation) {
+                case 'is':
+                  console.log("IS operation detected");
+                  filterQuery = `${filterQuery} ='${filterString}'`
+                  console.log(filterQuery)
+                  break;
+                case 'in':
+                  console.log("IN operation detected")
+                  filterQuery = `${filterQuery} IN(${filterString})`
+                  console.log(filterQuery)
+                  break;
+                case 'like':
+                   console.log("Like operation detected")
+                   filterQuery = `${filterQuery} LIKE '${filterString}'`
+                   console.log(filterQuery)
+                   break;
+              }
+            
+
+        }
+  
+}
+
+if (filtervalue[index + 1]){
+    filterQuery = `${filterQuery} and `
+}
+  });
+
+console.log("ASdddddddddd")
+  console.log(filterQuery)
+ var Query =  `use ${Databse}; Delete from ${Table} ${filterQuery};`;
+ console.log(Query);
+ let responsearray = []; 
+    connection.query(Query, (err, rows, fields) => {
+        if (!err)
+        {
+            responsearray.push(rows[1].affectedRows)
+            res.send(responsearray);
+        }
+
+   
+        else
+            console.log(err);
+    })
+});
 
 
 

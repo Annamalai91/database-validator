@@ -61,7 +61,13 @@ const useStyles = makeStyles(theme => ({
 
 export default function CustomizedSelects(props) {
   console.log("Props coming")
-  console.log(props.datavalue)
+
+  let datavalue3 = "Please enter a value";
+  if(props.datavalue2!=undefined)
+  {
+    datavalue3 = props.datavalue2[props.datavalue][1]
+  }
+  console.log(datavalue3)
   const classes = useStyles();
 
  
@@ -69,7 +75,7 @@ export default function CustomizedSelects(props) {
     <div>
       <FormControl className={classes.margin}>
         <InputLabel>Coloumn to be Filtered</InputLabel>
-        <BootstrapInput disabled={true} defaultValue={props.datavalue} />
+        <BootstrapInput disabled={true} value={props.datavalue} />
       </FormControl>
       <FormControl className={classes.second}>
         <InputLabel >Operation</InputLabel>
@@ -78,14 +84,15 @@ export default function CustomizedSelects(props) {
           onChange={props.changed}
           input={<BootstrapInput  />}
         >
-          <MenuItem value="is">is</MenuItem>
-          <MenuItem value="in">in</MenuItem>
-          <MenuItem value="like">like</MenuItem>
+         {props.menuitem.map((menuvalue) =>
+            <MenuItem value={menuvalue}>{menuvalue}</MenuItem>
+          )}
+          
         </Select>
       </FormControl>
       <FormControl className={classes.margin}>
         <InputLabel required={true} >Value of Filter(Comma seperated for "in" operation)</InputLabel>
-        <BootstrapInput defaultValue="Please enter the Search Sring " onBlur={props.filtervalue} style={{width:400}} />
+        <BootstrapInput value={datavalue3} onChange={props.filtervalue} style={{width:400}} />
       </FormControl>
     </div>
   );

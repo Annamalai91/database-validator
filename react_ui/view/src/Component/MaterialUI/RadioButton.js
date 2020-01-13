@@ -28,9 +28,12 @@ export default function RadioButton(props) {
     <FormControl component="fieldset">
          <p>{props.title}</p>
          {/* <RadioGroup aria-label="position" name="position" value={value} onChange={handleChange} row> */}
-         <RadioGroup aria-label="position" name="position" onChange={props.changed} row>
+         <RadioGroup aria-label="position" name="position" onClick={props.changed} row>
          {props.dataArray.map((data, index) => {
-              console.log(data); return (
+
+
+            //  console.log(data);
+             return (
               <FormControlLabel className={classes.root}
           key={data}
           value={data}
