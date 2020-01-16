@@ -2,10 +2,10 @@ import React from 'react';
 import { div, MDBNavbar, MDBNavbarBrand, MDBCollapse,MDBNavbarNav,MDBBtn,MDBNav,MDBNavItem,MDBBreadcrumb,MDBBreadcrumbItem} from 'mdbreact';
 import { BrowserRouter as Router,Redirect} from 'react-router-dom';
 import baseConfig from '../Component/Auth/BaseConfig'
-import DatabaseHandler from './DatabaseHandler'
+import DatabaseValidator from './DatabaseValidator'
 
 
-class Main extends React.Component {
+class Page2 extends React.Component {
   constructor(props) {
       super(props);
       this.state = {
@@ -35,7 +35,7 @@ class Main extends React.Component {
               <MDBNavbarNav right>
               {/* <MDBBtn color="mdb-color" onClick={() => baseConfig.auth().signOut()}>Sign out!</MDBBtn> */}
                  <MDBBreadcrumb style={BreadCrum} >
-                 <MDBBreadcrumbItem  onClick={() =>   this.props.history.push('/new')} >Validator</MDBBreadcrumbItem>
+                     <MDBBreadcrumbItem  onClick={() =>   this.props.history.push('/new')} >Validator</MDBBreadcrumbItem>
                      <MDBBreadcrumbItem  onClick={() =>   this.props.history.push('/main')} >Interactor</MDBBreadcrumbItem>
                     <MDBBreadcrumbItem  active onClick={() => baseConfig.auth().signOut()}>LogOut</MDBBreadcrumbItem>
                </MDBBreadcrumb>
@@ -49,12 +49,12 @@ class Main extends React.Component {
           </header>
         </Router>
         <div style={container} className="text-left mt-5  pt-5 ml-5 ">
-          <h2 className="mb-4" >This App is focused to be a one entry point for interacting with the Databases</h2>
-         <DatabaseHandler></DatabaseHandler>
+          <h2 className="mb-4" >This App is focused to be a one entry point for validating to Databases</h2>
+         <DatabaseValidator></DatabaseValidator>
         </div>
       </div>
     );
   }
 }
 
-export default Main;
+export default Page2;

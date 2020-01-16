@@ -35,26 +35,17 @@ INSERT INTO Employee(firstname, lastname, email) VALUES ("Annamalai","Kennedi","
 
 INSERT INTO Employee(firstname, lastname, email) VALUES ("Vignesh","Kennedi","anssdn@gmail.com");
 
-DELIMITER $$
-CREATE DEFINER=`mysql`@`localhost` PROCEDURE `EmployeeAddorEdit1`(IN `_id` INT, IN `_firstname` VARCHAR(30), IN `_lastname` VARCHAR(30), IN `_email` VARCHAR(50))
-BEGIN
-IF _id=0 THEN
-    INSERT INTO Employee(firstname,lastname,email) 
-        VALUES(_firstname,_lastname,_email);
-        SET _id=LAST_INSERT_ID();
-    ELSE
-        UPDATE Employee
-        SET
-        firstname = _firstname,
-        lastname = _lastname ,
-        email = _email ,
-        reg_date = CURRENT_TIMESTAMP()
-        where id=_id;
-    END IF;
-    
-    SELECT _id AS 'id';
-END$$
-DELIMITER ;
+INSERT INTO Table1(firstname, lastname, email) VALUES ("Annamalai","Kennedi","anssdn@gmail.com");
+
+INSERT INTO Table1(firstname, lastname, email) VALUES ("Vignesh","Kennedi","anssdn@gmail.com");
+
+
+INSERT INTO Table2(firstname, lastname, email) VALUES ("Annamalai","Kennedi","anssdn@gmail.com");
+
+INSERT INTO Table2(firstname, lastname, email) VALUES ("Vignesh","Kennedi","anssdn@gmail.com");
+
+
+
 
 
 CREATE DATABASE IF NOT EXISTS TCS2;
@@ -99,26 +90,17 @@ INSERT INTO Employee2(firstname, lastname, email) VALUES ("Annamalai","Kennedi",
 
 INSERT INTO Employee2(firstname, lastname, email) VALUES ("Vignesh","Kennedi","anssdn@gmail.com");
 
-DELIMITER $$
-CREATE DEFINER=`mysql`@`localhost` PROCEDURE `EmployeeAddorEdit1`(IN `_id` INT, IN `_firstname` VARCHAR(30), IN `_lastname` VARCHAR(30), IN `_email` VARCHAR(50))
-BEGIN
-IF _id=0 THEN
-    INSERT INTO Employee2(firstname,lastname,email) 
-        VALUES(_firstname,_lastname,_email);
-        SET _id=LAST_INSERT_ID();
-    ELSE
-        UPDATE Employee2
-        SET
-        firstname = _firstname,
-        lastname = _lastname ,
-        email = _email ,
-        reg_date = CURRENT_TIMESTAMP()
-        where id=_id;
-    END IF;
-    
-    SELECT _id AS 'id';
-END$$
-DELIMITER ;
+INSERT INTO Table22(firstname, lastname, email) VALUES ("Annamalai","Kennedi","anssdn@gmail.com");
+
+INSERT INTO Table22(firstname, lastname, email) VALUES ("Vignesh","Kennedi","anssdn@gmail.com");
+
+
+INSERT INTO Table23(firstname, lastname, email) VALUES ("Annamalai","Kennedi","anssdn@gmail.com");
+
+INSERT INTO Table23(firstname, lastname, email) VALUES ("Vignesh","Kennedi","anssdn@gmail.com");
+
+
+
 
 CREATE DATABASE IF NOT EXISTS TCS3;
 
@@ -165,26 +147,16 @@ INSERT INTO Employee3(firstname, lastname, email) VALUES ("Annamalai","Kennedi",
 
 INSERT INTO Employee3(firstname, lastname, email) VALUES ("Vignesh","Kennedi","anssdn@gmail.com");
 
-DELIMITER $$
-CREATE DEFINER=`mysql`@`localhost` PROCEDURE `EmployeeAddorEdit1`(IN `_id` INT, IN `_firstname` VARCHAR(30), IN `_lastname` VARCHAR(30), IN `_email` VARCHAR(50))
-BEGIN
-IF _id=0 THEN
-    INSERT INTO Employee3(firstname,lastname,email) 
-        VALUES(_firstname,_lastname,_email);
-        SET _id=LAST_INSERT_ID();
-    ELSE
-        UPDATE Employee3
-        SET
-        firstname = _firstname,
-        lastname = _lastname ,
-        email = _email ,
-        reg_date = CURRENT_TIMESTAMP()
-        where id=_id;
-    END IF;
-    
-    SELECT _id AS 'id';
-END$$
-DELIMITER ;
+INSERT INTO Table31(firstname, lastname, email) VALUES ("Annamalai","Kennedi","anssdn@gmail.com");
+
+INSERT INTO Table31(firstname, lastname, email) VALUES ("Vignesh","Kennedi","anssdn@gmail.com");
+
+INSERT INTO Table33(firstname, lastname, email) VALUES ("Annamalai","Kennedi","anssdn@gmail.com");
+
+INSERT INTO Table33(firstname, lastname, email) VALUES ("Vignesh","Kennedi","anssdn@gmail.com");
+
+
+
 
 CREATE DATABASE IF NOT EXISTS TCS4;
 
@@ -230,25 +202,13 @@ INSERT INTO Employee4(firstname, lastname, email) VALUES ("Annamalai","Kennedi",
 
 INSERT INTO Employee4(firstname, lastname, email) VALUES ("Vignesh","Kennedi","anssdn@gmail.com");
 
-DELIMITER $$
-CREATE DEFINER=`mysql`@`localhost` PROCEDURE `EmployeeAddorEdit1`(IN `_id` INT, IN `_firstname` VARCHAR(30), IN `_lastname` VARCHAR(30), IN `_email` VARCHAR(50))
-BEGIN
-IF _id=0 THEN
-    INSERT INTO Employee4(firstname,lastname,email) 
-        VALUES(_firstname,_lastname,_email);
-        SET _id=LAST_INSERT_ID();
-    ELSE
-        UPDATE Employee4
-        SET
-        firstname = _firstname,
-        lastname = _lastname ,
-        email = _email ,
-        reg_date = CURRENT_TIMESTAMP()
-        where id=_id;
-    END IF;
-    
-    SELECT _id AS 'id';
-END$$
-DELIMITER ;
+INSERT INTO Table43(firstname, lastname, email) VALUES ("Annamalai","Kennedi","anssdn@gmail.com");
+
+INSERT INTO Table43(firstname, lastname, email) VALUES ("Vignesh","Kennedi","anssdn@gmail.com");
+
+INSERT INTO Table42(firstname, lastname, email) VALUES ("Annamalai","Kennedi","anssdn@gmail.com");
+
+INSERT INTO Table42(firstname, lastname, email) VALUES ("Vignesh","Kennedi","anssdn@gmail.com");
+
 
 use tcs;

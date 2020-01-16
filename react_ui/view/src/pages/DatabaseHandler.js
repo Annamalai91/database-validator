@@ -70,7 +70,8 @@ pushArrayItems = (filterarr,event) => {
 }
 
 
-// Get the columns selected
+// This method is used to handle the column changes in the dropdown based on from where they are called from
+// To improve this can be split into different method or overloaded or overrided in future
 
 handleColoumnChange = (event,whichDropDown) => {
     if(whichDropDown==="Report")
@@ -132,7 +133,8 @@ componentDidMount () {
 
 
 
-// On change, we want to know what has changed
+// This method is used to handle the radio button changes in the UI  based on from where they are called from
+// To improve this can be split into different method or overloaded or overrided in future
 
 handleRadioChange = (event,whichRadio) => {
     const selectedValue=event.target.value; 
@@ -238,7 +240,8 @@ handleRadioChange = (event,whichRadio) => {
    
   };
   
-
+// This is used to push array items from down securely and as per Business requiremment. 
+// If the key is alreeady presen, it needs to overwritten and not pushed as new element 
   pushArrayItemsdropdown = (event,filter,filterarr,tempvalue) => {
     let tempObj = {};
     let iselementpresent= false;
@@ -281,8 +284,7 @@ handleRadioChange = (event,whichRadio) => {
 
 
   //This method is used to set the state of filtered value
-
-  
+  // Two way binded   
   handleFilterValueChange = (event,filter,operation) => {
        let filterarr = []; 
       
@@ -392,7 +394,7 @@ databaseCallSelectYesFilterHandler = (Databse,Table,Columns,filter,columnarr) =>
     
 }
 
-//Delete
+// Call to Databsae when the Delete operation is selected 
 
 databaseCallDeleteHandler = (Databse,Table,Columns,filter,columnarr) => {
 
@@ -443,7 +445,7 @@ console.log(columnarr)
 
 
 
-//Update 
+// Call to Databsae when the Update operation is selected 
 
 databaseCallUpdateHandler = (Databse,Table,Columns,filter,columnarr) => {
     let filtervalue = this.state.filtervalue;
@@ -584,6 +586,7 @@ databaseCallHandler = () => {
     }
 
  //Ask member, if he want to add any filter to the Query after he selects the table
+ // Only applicable for Select 
  if (this.state.isTableSelected) {
  filterview = (
      this.state.operationSelected==="Select" ?
@@ -600,7 +603,7 @@ databaseCallHandler = () => {
 );
  }
 
-//Delete View
+// Build the Delete View Dropdown 
 
 if(this.state.operationSelected==="Delete")
 {
@@ -623,6 +626,8 @@ if(this.state.operationSelected==="Delete")
 
 //If table is selected, then we can show the columns
 //Also we will ask, if member want to add any condition to filter the results 
+// Only for Slselct 
+// Building Select View 
 if(this.state.operationSelected==="Select")
 {
     
@@ -663,6 +668,8 @@ if(this.state.operationSelected==="Select")
       }
 }
 
+
+// Buld the Update vView for Dropdown
 if(this.state.operationSelected==="Update" && (this.state.columnupdateSelected.length>0 && (this.state.filterupdatevalue.length == this.state.columnupdateSelected.length )))
 {
     columnview2 = (
@@ -676,7 +683,7 @@ if(this.state.operationSelected==="Update" && (this.state.columnupdateSelected.l
         </div>
     );
 }
-// To Do from tomoeroowcd 
+// Buld the Update vView for Dropdown 2
 if(this.state.operationSelected==="Update")
 {
     
@@ -703,8 +710,6 @@ if(this.state.operationSelected==="Update")
    
 
 //If Columns are selected, then we need to ask, if member is going to add any Where condition in the query
-
-
 // When selected No during the Filter, we are going to pop up a message saying that 
 //Only top 10 rows will be fetched 
   
@@ -723,7 +728,7 @@ if (this.state.filterSelected==="No") {
   }
 
 
-  // Affected Rows View
+  // Build Affected Rows View
 
   if (this.state.Showmessage) {
     console.log("Came inbside Show sMessage")
@@ -743,6 +748,7 @@ if (this.state.filterSelected==="No") {
 
 
   //If column view is null then we can create the table
+  // Build the table body
   if(columnview!=null && this.state.showTable)
   {
       tablebody = (
@@ -756,6 +762,7 @@ if (this.state.filterSelected==="No") {
   }
 
     //If filter is selected then we can get the inputs of the filter form the User
+    // Build Filter input view.. that values that enter after we mulitselect 
     if(this.state.columnsfilterSelected.length>0)
     {
       //     console.log(this.state.columnsfilterSelected);
@@ -804,6 +811,8 @@ if (this.state.filterSelected==="No") {
           );
       }
 
+
+      // Build Default View 
   const defaultView = (
       <div>
     <RadioButton
@@ -821,6 +830,7 @@ if (this.state.filterSelected==="No") {
     </div>
   )
   
+// Build Button view
 
 if(this.state.filterSelected ==="No" && this.state.columnsSelected.length>0)
 {

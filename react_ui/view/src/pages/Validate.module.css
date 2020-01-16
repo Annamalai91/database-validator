@@ -1,0 +1,13 @@
+.DBCards {
+    width: 60%;
+    margin: 16px auto;
+    border: 21px solid red;
+    box-shadow: 0 2px 3px #ccc;
+    padding: 16px;
+}
+
+@media (min-width: 500px) {
+    .DBCards {
+        width: 450px;
+    }
+}

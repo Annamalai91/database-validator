@@ -1,5 +1,7 @@
 var express = require("express");
 
+const util = require('util')
+
 var app = express();
 const cors = require('cors');
 const bodyparser = require('body-parser');
@@ -105,8 +107,6 @@ app.get('/SelectQuery', (req, res) => {
             console.log(err);
     })
 });
-
-
 
 
 
@@ -446,6 +446,113 @@ console.log("ASdddddddddd")
             console.log(err);
     })
 });
+
+var ValidateDatabseHandler = (DBToValidate,res) => {
+    let responseArray = []; // It must of format [ResponseObj]
+    DBToValidate.forEach(function(database,index1){
+       
+      
+        console.log("*************************")
+        console.log(database);
+        var getTables =`use ${database}; Show tables;`;
+        connection.query(getTables, (err, rows1, fields) => {
+            if (!err){
+               
+                console.log("The Tables for the Databse are ")
+                if(rows1[1]!=undefined)
+                {
+                    rows1[1].forEach((row,index) => {
+                        let responseObjArray = []; // Response Obj Array is of format [Table Name , Success/Failure]
+                        let responseObj = {}; // Response Obj must be of format {DatabaseName : [ResponseObjArray]}
+                        console.log(Object.values(row)[0].toString())
+                        let TableName = Object.values(row)[0].toString();
+                        const Query =`use ${database}; SELECT * FROM ${TableName} Limit 1;`;
+                        connection.query(Query, (err, rows, fields) => {
+                            if (!err)
+                            {
+                               console.log("The Value final is")
+                               console.log(rows[1])
+                              let validationString = null; 
+                               if(rows[1].length > 0)
+                               {
+                                   console.log(`The ${TableName} in the ${database} is in Good Health Condition`)
+                                   validationString = "Success"
+                               }
+                               else
+                               {
+                                console.log(`The ${TableName} in the ${database} is in Error State, please check`)
+                                  validationString = "Failure"
+                               }
+                               responseObjArray.push(TableName);
+                               responseObjArray.push(validationString);
+                               responseObj[database] = responseObjArray;
+                               responseArray.push(responseObj);
+                               console.log(responseArray)
+
+
+
+                               console.log(index1)
+                               console.log(index)
+                               console.log(rows1[1].length)
+                               console.log(rows1[1].length-index+1)
+                               console.log(DBToValidate.length-index1+1)
+                               console.log(DBToValidate.length)
+                               if (((rows1[1].length-(index+1))==0) && (DBToValidate.length-(index1+1))==0){
+                                
+                                   console.log("All DB and table are checked")
+                                   
+                                   console.log(responseArray)
+                                   res.send(responseArray)
+                            }else{
+                                console.log("There is still some table or DB to check")
+                            }
+
+                            }
+                    
+                       
+                            else
+                                console.log(err);
+                        })
+                    })
+                }
+            } 
+            else
+            {
+                console.log("Error retrieving the Tables for the Database")
+                console.log(err);
+            }
+              
+        })
+    });
+    return
+
+}
+
+
+//Validate the Databse
+
+app.get('/validateDatabse', (req, res) => {
+    console.log("Came inside validateDatabse")
+//SELECT TOP 3 * FROM TableName;
+    let DBToValidate = req.query.Database;
+    let responseArray = [];
+    console.log(DBToValidate)
+  ValidateDatabseHandler(DBToValidate,res);
+
+   
+    
+//    const ValidateDatabseHandlerwithPromise = util.promisify(ValidateDatabseHandler);
+//    ValidateDatabseHandlerwithPromise(DBToValidate).then( result => {
+//     console.log("Databsae interaction was done")
+//    }
+         
+
+    console.log("*************************")
+});
+
+
+
+
 
 
 

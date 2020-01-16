@@ -8,7 +8,7 @@ import FormControl from '@material-ui/core/FormControl';
 
 const useStyles = makeStyles({
     root: {
-        minWidth: 300,
+        minWidth: 200,
     },
   });
 
